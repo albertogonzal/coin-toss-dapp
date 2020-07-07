@@ -1,1 +1,1 @@
-Coin toss dapp built solidity and web3.js
+Coin toss dapp built with solidity and web3.js
