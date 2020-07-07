@@ -1,0 +1,11 @@
+node_modules
+package-lock.json
+webpack.config.js
+build
+npm-debug.log
+.env
+.DS_Store
+
+.secret
+dist
+truffle-config.js
