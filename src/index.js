@@ -1,5 +1,6 @@
 import Web3 from 'web3';
 import { getContract } from './contract.js';
+import './styles/main.scss';
 
 const web3 = new Web3(Web3.givenProvider);
 let contract;

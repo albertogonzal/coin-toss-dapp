@@ -1,6 +1,5 @@
 node_modules
 package-lock.json
-webpack.config.js
 build
 npm-debug.log
 .env
