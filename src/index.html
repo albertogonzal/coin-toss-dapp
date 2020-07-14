@@ -28,36 +28,33 @@
   <body>
     <div class="container">
       <div class="row">
+        <div class="col d-flex justify-content-end">
+          <div id="owner">
+            <div class="mt-4">
+              <span>contract balance: <span id="cbalance"></span></span>
+              <button id="withdraw" class="btn btn-secondary">
+                withdraw
+              </button>
+              <button id="callback" class="btn btn-secondary">callback</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
         <div class="col d-flex justify-content-center">
           <div class="card mt-5">
-            <div class="card-body">
-              <p>contract balance: <span id="cbalance"></span></p>
+            <div class="card-body text-center">
+              <h3>Coin Toss</h3>
               <p>balance: <span id="balance"></span></p>
               <div class="form-inline mb-2">
                 <input type="text" id="amount" class="form-control mr-2" />
                 <button id="send" class="btn btn-secondary">send</button>
               </div>
-              <div class="form-inline">
-                <input type="text" id="query" class="form-control mr-2" />
-                <button id="callback" class="btn btn-secondary">
-                  callback
-                </button>
-              </div>
               <div class="mt-4">
-                <button id="testEvent" class="btn btn-secondary mr-1">
-                  test event
-                </button>
-                <button id="withdraw" class="btn btn-secondary">
-                  withdraw
-                </button>
+                <span id="outcome"></span><span id="status"></span>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="row mt-5">
-        <div class="col d-flex justify-content-center">
-          <div id="outcome"></div>
         </div>
       </div>
     </div>
