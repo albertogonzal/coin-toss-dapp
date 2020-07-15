@@ -47,12 +47,34 @@
               <h3>Coin Toss</h3>
               <p>balance: <span id="balance"></span></p>
               <div class="form-inline mb-2">
-                <input type="text" id="amount" class="form-control mr-2" />
+                <input
+                  type="text"
+                  id="amount"
+                  class="form-control mr-2"
+                  placeholder="amount"
+                />
+                <input
+                  type="text"
+                  id="testQuerySend"
+                  class="form-control mr-2 d-none"
+                  placeholder="query id"
+                />
                 <button id="send" class="btn btn-secondary">send</button>
               </div>
-              <div id="test" class="form-inline mb-2 invisible">
-                <input type="text" id="query" class="form-control mr-2" />
-                <button id="callback" class="btn btn-secondary">
+              <div id="test" class="form-inline mb-2 d-none">
+                <input
+                  type="text"
+                  id="testResult"
+                  class="form-control mr-2"
+                  placeholder="result"
+                />
+                <input
+                  type="text"
+                  id="testQueryCallback"
+                  class="form-control mr-2"
+                  placeholder="query id"
+                />
+                <button id="testCallback" class="btn btn-secondary">
                   callback
                 </button>
               </div>

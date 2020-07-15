@@ -19,7 +19,7 @@ window.ethereum.enable().then(async (accounts) => {
   });
 
   contractInstance.events.Outcome().on('data', async (res) => {
-    $('#status').text(res.returnValues.status === 1 ? 'win' : 'lose');
+    $('#status').text(res.returnValues.status === parseInt(1) ? 'win' : 'lose');
     await updateContractBalance(contractInstance._address);
     await updateBalance(userAddress);
   });
@@ -29,9 +29,12 @@ window.ethereum.enable().then(async (accounts) => {
     await contractInstance.methods.withdrawAll().send();
   });
 
-  $('#callback').click(async () => {
+  $('#testCallback').click(async () => {
     await contractInstance.methods
-      .testCallback(web3.utils.fromAscii('abc'), '123')
+      .testCallback(
+        web3.utils.fromAscii($('#testQueryCallback').val()),
+        parseInt($('#testResult').val())
+      )
       .send();
   });
 
@@ -48,7 +51,7 @@ const toss = async (instance, chainId) => {
       .on('receipt', onReceipt);
   } else {
     await instance.methods
-      .testToss(web3.utils.fromAscii('a'))
+      .testToss(web3.utils.fromAscii($('#testQuerySend').val()))
       .send({ value: web3.utils.toWei($('#amount').val(), 'ether') })
       .on('transactionHash', onTxHash)
       .on('receipt', onReceipt);
@@ -103,9 +106,11 @@ const chainSetup = async (instance, chainId) => {
   }
 
   if (chain === 'local') {
-    $('#test').removeClass('invisible');
+    $('#test').removeClass('d-none');
+    $('#testQuerySend').removeClass('d-none');
   } else {
-    $('#test').addClass('invisible');
+    $('#test').addClass('d-none');
+    $('#testQuerySend').addClass('d-none');
   }
   $('#network').text(message);
 
