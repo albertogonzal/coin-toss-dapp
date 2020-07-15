@@ -47,13 +47,7 @@ contract CoinToss is Ownable, usingProvable {
             gasForCallBack
         );
 
-        Game memory game;
-        game.player = msg.sender;
-        game.amount = msg.value;
-        game.status = StatusTypes.Pending;
-
-        games[queryId] = game;
-        queries[msg.sender].push(queryId);
+        createGame(queryId);
     }
 
     function __callback(
@@ -78,15 +72,28 @@ contract CoinToss is Ownable, usingProvable {
             game.player.transfer(toTransfer);
         }
 
-        emit Outcome(msg.sender, _queryId, game.amount, game.status);
+        emit Outcome(game.player, _queryId, game.amount, game.status);
     }
 
-    function testCallback(bytes32 _queryId, string memory _result) public {
+    function createGame(bytes32 _queryId) private {
+        Game memory game;
+        game.player = msg.sender;
+        game.amount = msg.value;
+        game.status = StatusTypes.Pending;
+
+        games[_queryId] = game;
+        queries[msg.sender].push(_queryId);
+    }
+
+    function testToss(bytes32 _queryId) public payable {
+        createGame(_queryId);
+    }
+
+    function testCallback(bytes32 _queryId, uint256 _result) public {
         Game memory game = games[_queryId];
         game.status = StatusTypes.Lose;
 
-        uint256 randomNumber = uint256(keccak256(abi.encodePacked(_result))) %
-            2;
+        uint256 randomNumber = _result;
 
         if (randomNumber == 1) {
             game.status = StatusTypes.Win;

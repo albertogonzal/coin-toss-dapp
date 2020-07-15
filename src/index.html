@@ -28,15 +28,15 @@
   <body>
     <div class="container">
       <div class="row">
-        <div class="col d-flex justify-content-end">
-          <div id="owner">
-            <div class="mt-4">
-              <span>contract balance: <span id="cbalance"></span></span>
-              <button id="withdraw" class="btn btn-secondary">
-                withdraw
-              </button>
-              <button id="callback" class="btn btn-secondary">callback</button>
-            </div>
+        <div class="col d-flex justify-content-between">
+          <div class="mt-4">
+            <span>network: <span id="network"></span></span>
+          </div>
+          <div id="owner" class="mt-4">
+            <span>contract balance: <span id="cbalance"></span></span>
+            <button id="withdraw" class="btn btn-secondary">
+              withdraw
+            </button>
           </div>
         </div>
       </div>
@@ -49,6 +49,12 @@
               <div class="form-inline mb-2">
                 <input type="text" id="amount" class="form-control mr-2" />
                 <button id="send" class="btn btn-secondary">send</button>
+              </div>
+              <div id="test" class="form-inline mb-2 invisible">
+                <input type="text" id="query" class="form-control mr-2" />
+                <button id="callback" class="btn btn-secondary">
+                  callback
+                </button>
               </div>
               <div class="mt-4">
                 <span id="outcome"></span><span id="status"></span>

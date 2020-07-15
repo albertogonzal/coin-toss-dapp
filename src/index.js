@@ -1,30 +1,30 @@
 import Web3 from 'web3';
-import { getContract } from './getContract.js';
+import { getContractData } from './getContractData.js';
 import './styles/main.scss';
 
 const web3 = new Web3(Web3.givenProvider);
 let contractInstance;
+let contractData;
 let userAddress;
 
 window.ethereum.enable().then(async (accounts) => {
-  let contractData = await getContract();
+  contractData = await getContractData();
   userAddress = accounts[0];
+  newContractInstance(contractData);
 
-  contractInstance = new web3.eth.Contract(
-    contractData.abi,
-    contractData.address,
-    { from: userAddress }
-  );
-  console.log('contract instance', contractInstance);
+  chainSetup(contractInstance, ethereum.chainId);
+  ethereum.on('chainChanged', (chainId) => {
+    newContractInstance(contractData);
+    chainSetup(contractInstance, chainId);
+  });
 
-  // subscribeEvent(contractInstance, 'Outcome');
   contractInstance.events.Outcome().on('data', async (res) => {
     $('#status').text(res.returnValues.status === 1 ? 'win' : 'lose');
     await updateContractBalance(contractInstance._address);
     await updateBalance(userAddress);
   });
 
-  $('#send').click(() => toss(contractInstance));
+  $('#send').click(() => toss(contractInstance, ethereum.chainId));
   $('#withdraw').click(async () => {
     await contractInstance.methods.withdrawAll().send();
   });
@@ -39,55 +39,79 @@ window.ethereum.enable().then(async (accounts) => {
   await updateBalance(accounts[0]);
 });
 
-const toss = async (instance) => {
-  await instance.methods
-    .toss()
-    .send({ value: web3.utils.toWei($('#amount').val(), 'ether') })
-    .on('transactionHash', async (hash) => {
-      $('#outcome').text(`${$('#amount').val()} eth bet `);
-      $('#status').text('tx pending');
-    })
-    .on('receipt', async () => {
-      $('#status').text('sent to provable');
-      await updateContractBalance(instance._address);
-      await updateBalance(userAddress);
-    });
+const toss = async (instance, chainId) => {
+  if (Number.isInteger(parseInt(chainId))) {
+    await instance.methods
+      .toss()
+      .send({ value: web3.utils.toWei($('#amount').val(), 'ether') })
+      .on('transactionHash', onTxHash)
+      .on('receipt', onReceipt);
+  } else {
+    await instance.methods
+      .testToss(web3.utils.fromAscii('a'))
+      .send({ value: web3.utils.toWei($('#amount').val(), 'ether') })
+      .on('transactionHash', onTxHash)
+      .on('receipt', onReceipt);
+  }
 };
 
-// const subscribeEvent = (instance, eventName) => {
-//   let eventJsonInterface = web3.utils._.find(
-//     instance._jsonInterface,
-//     (o) => o.name === eventName && o.type === 'event'
-//   );
+const onTxHash = async () => {
+  $('#outcome').text(`${$('#amount').val()} eth bet `);
+  $('#status').text('tx pending');
+};
 
-//   web3.eth.subscribe(
-//     'logs',
-//     {
-//       address: instance._address,
-//       topics: [
-//         eventJsonInterface.signature,
-//         web3.utils.padLeft(userAddress, 64),
-//       ],
-//     },
-//     async (err, res) => {
-//       if (!err) {
-//         const eventObj = web3.eth.abi.decodeLog(
-//           eventJsonInterface.inputs,
-//           res.data,
-//           res.topics.slice(1)
-//         );
+const onReceipt = async () => {
+  $('#status').text('sent to provable');
+  await updateContractBalance(contractInstance._address);
+  await updateBalance(userAddress);
+};
 
-//         console.log(eventObj);
+const newContractInstance = async (contractData) => {
+  let chain = Number.isInteger(parseInt(ethereum.chainId))
+    ? parseInt(ethereum.chainId)
+    : 'local';
+  contractInstance = new web3.eth.Contract(
+    contractData.abi,
+    contractData.address[chain],
+    {
+      from: userAddress,
+    }
+  );
+};
 
-//         $('#status').text(eventObj.status === 1 ? 'win' : 'lose');
-//         await updateContractBalance(instance._address);
-//         await updateBalance(userAddress);
-//       }
-//     }
-//   );
-// };
+const chainSetup = async (instance, chainId) => {
+  let chain = Number.isInteger(parseInt(chainId)) ? parseInt(chainId) : 'local';
+  let message;
 
-const onProvable = async (res) => {};
+  switch (chain) {
+    case 1:
+      message =
+        'main ethereum network, please change to a test or local network';
+      break;
+    case 3:
+      message = 'ropsten';
+      break;
+    case 4:
+      message = 'rinkeby';
+      break;
+    case 'local':
+      message = 'local';
+      break;
+    default:
+      message = 'please change to a test or local network';
+      break;
+  }
+
+  if (chain === 'local') {
+    $('#test').removeClass('invisible');
+  } else {
+    $('#test').addClass('invisible');
+  }
+  $('#network').text(message);
+
+  await updateContractBalance(contractInstance._address);
+  await updateBalance(userAddress);
+};
 
 const updateBalance = async (address) => {
   let balance = await web3.eth.getBalance(address);
